@@ -1,0 +1,33 @@
+- name: Update all packages to their latest version
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+
+- name: Install a list of packages
+  ansible.builtin.dnf:
+    pkg:
+      - ansible-core
+      - bzip2-devel
+      - curl
+      - dnf-plugins-core
+      - dnf-utils
+      - dnsutils
+      - fzf
+      - gcc
+      - git
+      - libsqlite3x-devel
+      - make
+      - openssl-devel
+      - origin-clients
+      - podman
+      - python3-libselinux
+      - readline-devel
+      - ripgrep
+      - the_silver_searcher
+      - tmux
+      - util-linux-user
+      - vim
+      - zlib-devel # for pyenv
+      - zsh
+      - spice-vdagent
+      - spice-webdavd

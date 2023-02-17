@@ -1,0 +1,55 @@
+- name: Detect if shared diectory mount point exist
+  ansible.builtin.stat:
+    path: "/home/{{ ansible_user }}/shared"
+  register: shared_dir
+
+- name: Create shared directory mount point
+  ansible.builtin.file:
+    path: "shared"
+    state: directory
+    mode: 0755
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  when: not shared_dir.stat.exists
+
+- name: Mount shared directory
+  ansible.posix.mount:
+    path: "/home/{{ ansible_user }}/shared"
+    src: share
+    fstype: virtiofs
+    state: mounted
+    boot: true
+
+- name: Symlink projects dir from shared
+  ansible.builtin.file:
+    src: "/home/{{ ansible_user }}/shared/case-sensitive-volume/projects"
+    dest: "/home/{{ ansible_user }}/projects"
+    state: link
+    force: true
+
+- name: Symlink cluster-info dir from shared
+  ansible.builtin.file:
+    src: "/home/{{ ansible_user }}/shared/case-sensitive-volume/cluster-info"
+    dest: "/home/{{ ansible_user }}/cluster-info"
+    state: link
+    force: true
+
+- name: Setup ~/.cdpath
+  ansible.builtin.copy:
+    dest: "/home/{{ ansible_user }}/.cdpath"
+    content: |
+      export CDPATH=:$HOME
+      export CDPATH=$CDPATH:$HOME/projects/src/github.com/TheRealHaoLiu
+      export CDPATH=$CDPATH:$HOME/projects/src/github.com/open-cluster-management
+      export CDPATH=$CDPATH:$HOME/projects/src/code.engineering.redhat.com/gerrit
+      export CDPATH=$CDPATH:$HOME/projects/src/github.com
+      export CDPATH=$CDPATH:$HOME/projects/src/code.engineering.redhat.com
+      export CDPATH=$CDPATH:$HOME/projects/src/github.ibm.com
+      export CDPATH=$CDPATH:$HOME/projects/src
+      export CDPATH=$CDPATH:$HOME/.ansible/collections
+
+- name: Append ~/.cdpath to ~/.zshrc
+  ansible.builtin.lineinfile:
+    dest: "/home/{{ ansible_user }}/.zshrc"
+    line: "source ~/.cdpath"
+    state: present

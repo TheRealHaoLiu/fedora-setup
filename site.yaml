@@ -1,0 +1,46 @@
+---
+- name: Configure my Fedora Server VM
+  hosts: all
+  become: true
+  become_method: sudo
+
+  pre_tasks:
+    - name: Workaround for "ansible_user is undefined" error with gantsign.oh-my-zsh ¯\_(ツ)_/¯
+      ansible.builtin.set_fact:
+        ohmzsh_user: "{{ ansible_user }}"
+
+  roles:
+    - user_config
+    - packages
+    - docker
+    - role: gantsign.oh-my-zsh
+      users:
+        - username: "{{ ohmzsh_user }}"
+          oh_my_zsh_update_mode: auto
+          oh_my_zsh:
+            theme: murilasso
+            plugins:
+              - git
+              - kubectl
+              - oc
+              - pyenv
+              - python
+              - fzf
+    - role: hao_specific
+      tags: [never, hao]
+
+    # - role: avanov.pyenv
+    #   pyenv_path: "/home/{{ ansible_user }}/.pyenv"
+    #   pyenv_owner: "{{ ansible_user }}"
+    #   pyenv_global: "3.9.10"
+    #   pyenv_update_git_install: true
+    #   pyenv_enable_autocompletion: false
+    #   pyenv_python_versions:
+    #     - "3.9.10"
+    #     - "2.7.18"
+    #   pyenv_setting_path: "/home/{{ ansible_user }}/.zshrc"
+    #   pyenv_virtualenvs: []
+
+
+# ---
+# - name: Configure my /etc/hosts
