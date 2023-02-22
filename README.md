@@ -8,5 +8,5 @@ NOTE: The playbook is only used for the configuration of the VM not the provisio
 The first time you run the playbook you must run it with the `--ask-pass` and `--ask-become-pass` flags. 
 
 ```bash
-ansible-playbook site.yml -i <hostname>,  --user <username> --ask-pass --ask-become-pass
+ansible-playbook fedora-setup.yml -i <hostname>,  --user <username> --ask-pass --ask-become-pass
 ```

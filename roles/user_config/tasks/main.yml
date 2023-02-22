@@ -1,4 +1,4 @@
-- name: "Setup passwordless sudo for {{ ansible_user }} sudoer"
+- name: "Setup passwordless sudo sudoer for {{ ansible_user }}"
   ansible.builtin.lineinfile:
     dest: /etc/sudoers
     regexp: "{{ ansible_user }}"

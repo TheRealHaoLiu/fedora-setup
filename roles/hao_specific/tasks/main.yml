@@ -1,7 +1,14 @@
-- name: Detect if shared diectory mount point exist
+- name: Detect if shared diectory mount point exist for KVM
   ansible.builtin.stat:
     path: "/home/{{ ansible_user }}/shared"
   register: shared_dir
+  when: ansible_facts['virtualization_type'] == 'kvm'
+
+- name: Detect if shared directory mount point exist for VMWare
+  ansible.builtin.stat:
+    path: "/mnt/hgfs"
+  register: shared_dir
+  when: ansible_facts['virtualization_type'] == 'VMware'
 
 - name: Create shared directory mount point
   ansible.builtin.file:
@@ -19,13 +26,16 @@
     fstype: virtiofs
     state: mounted
     boot: true
+  when: ansible_facts['virtualization_type'] == 'kvm'
 
 - name: Symlink projects dir from shared
   ansible.builtin.file:
-    src: "/home/{{ ansible_user }}/shared/case-sensitive-volume/projects"
+    src: "{{ shared_dir.stat.path }}/case-sensitive-volume/projects"
     dest: "/home/{{ ansible_user }}/projects"
     state: link
     force: true
+    mode: 0755
+  when: shared_dir.stat.exists
 
 - name: Symlink cluster-info dir from shared
   ansible.builtin.file:
@@ -33,6 +43,8 @@
     dest: "/home/{{ ansible_user }}/cluster-info"
     state: link
     force: true
+    mode: 0755
+  when: shared_dir.stat.exists
 
 - name: Setup ~/.cdpath
   ansible.builtin.copy:
@@ -47,9 +59,12 @@
       export CDPATH=$CDPATH:$HOME/projects/src/github.ibm.com
       export CDPATH=$CDPATH:$HOME/projects/src
       export CDPATH=$CDPATH:$HOME/.ansible/collections
+    mode: 0644
+  when: shared_dir.stat.exists
 
 - name: Append ~/.cdpath to ~/.zshrc
   ansible.builtin.lineinfile:
     dest: "/home/{{ ansible_user }}/.zshrc"
     line: "source ~/.cdpath"
     state: present
+  when: shared_dir.stat.exists
