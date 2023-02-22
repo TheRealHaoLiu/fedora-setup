@@ -1,8 +1,8 @@
-- name: Setup passwordless sudo for all sudoer
+- name: "Setup passwordless sudo for {{ ansible_user }} sudoer"
   ansible.builtin.lineinfile:
     dest: /etc/sudoers
-    regexp: "%wheel"
-    line: "%wheel	ALL=(ALL)	NOPASSWD: ALL"
+    regexp: "{{ ansible_user }}"
+    line: "{{ ansible_user }}	ALL=(ALL)	NOPASSWD: ALL"
     state: present
 
 - name: Add .ssh directories
