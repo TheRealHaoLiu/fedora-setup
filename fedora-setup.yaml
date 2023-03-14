@@ -1,7 +1,6 @@
 ---
 - name: Configure my Fedora Server VM
   hosts: all
-  become: true
   become_method: sudo
 
   pre_tasks:
@@ -10,10 +9,14 @@
         ohmzsh_user: "{{ ansible_user }}"
 
   roles:
-    - user_config
-    - packages
-    - docker
+    - role: user_config
+      become: true
+    - role: packages
+      become: true
+    - role: docker
+      become: true
     - role: gantsign.oh-my-zsh
+      become: false
       users:
         - username: "{{ ohmzsh_user }}"
           oh_my_zsh_update_mode: auto
@@ -26,8 +29,17 @@
               - pyenv
               - python
               - fzf
+    - role: kubectl
+      vars:
+        kubectl_plugins:
+          - ctx
+          - ns
+    - role: nvm
+      become: false
     - role: hao_specific
+      become: true
       tags: [never, hao]
+
 
     # - role: avanov.pyenv
     #   pyenv_path: "/home/{{ ansible_user }}/.pyenv"

@@ -1,0 +1,52 @@
+---
+- name: Set fact krew
+  ansible.builtin.set_fact:
+    krew: krew-{{ ansible_system | lower}}_amd64
+  when: ansible_architecture == "x86_64"
+
+- name: Set fact krew
+  ansible.builtin.set_fact:
+    krew: krew-{{ ansible_system | lower}}_arm64
+  when: ansible_architecture == "aarch64"
+
+- name: Debug
+  ansible.builtin.debug:
+    msg: "{{ krew }}"
+
+- name: Fetch krew
+  ansible.builtin.get_url:
+    url: "https://github.com/kubernetes-sigs/krew/releases/latest/download/{{ krew }}.tar.gz"
+    dest: /tmp/krew.tar.gz
+
+- name: Unarchive krew
+  ansible.builtin.unarchive:
+    src: /tmp/krew.tar.gz
+    dest: /tmp
+    remote_src: true
+
+- name: Install krew
+  ansible.builtin.shell: >
+    /tmp/{{ krew }} install krew
+
+- name: Add krew to path
+  ansible.builtin.lineinfile:
+    path: /home/{{ ansible_user }}/.zshrc
+    line: 'export PATH="${PATH}:${HOME}/.krew/bin'
+    insertafter: EOF
+    state: present
+    create: true
+    mode: 0644
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  become: false
+
+# TODO: fix me
+# - name: Upgrade krew
+#   ansible.builtin.shell: >
+#     /usr/local/bin/kubectl krew upgrade
+#   become: false
+
+# - name: Update krew plugin index
+#   ansible.builtin.shell: >
+#     /usr/local/bin/kubectl krew update
+#   become: false

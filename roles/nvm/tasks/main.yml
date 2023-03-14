@@ -1,0 +1,14 @@
+- name: Install nvm
+  ansible.builtin.shell: >
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+
+- name: Update zshrc with nvm
+  ansible.builtin.lineinfile:
+    dest: "/home/{{ ansible_user_id }}/.zshrc"
+    line: "source ~/.nvm/nvm.sh"
+    insertafter: EOF
+    state: present
+
+- name: Install node
+  ansible.builtin.shell: >
+    source ~/.nvm/nvm.sh && nvm install v18.14.2

@@ -1,3 +1,5 @@
 collections:
 - gantsign.oh-my-zsh
 - avanov.pyenv
+- onepercentclub.ansible-nvm
+

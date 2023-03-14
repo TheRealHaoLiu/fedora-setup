@@ -1,0 +1,6 @@
+---
+- name: Install Krew plugins
+  ansible.builtin.shell: >
+    export PATH="${PATH}:${HOME}/.krew/bin" &&
+    kubectl krew install {{ item }}
+  with_items: "{{ kubectl_plugins }}"

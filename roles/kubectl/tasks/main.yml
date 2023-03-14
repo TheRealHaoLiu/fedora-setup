@@ -1,0 +1,9 @@
+---
+- name: Install Kubectl
+  include: kubectl_install.yml
+
+- name: Install Kubectl Krew Plugin
+  include: krew_install.yml
+
+- name: Install Plugins
+  include: kubectl_plugins.yml
