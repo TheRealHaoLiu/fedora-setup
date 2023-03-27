@@ -6,7 +6,7 @@
 - name: Install a list of packages
   ansible.builtin.dnf:
     pkg:
-      - ansible-core
+      - ansible-core # duh
       - bzip2-devel
       - curl
       - dnf-plugins-core
@@ -22,14 +22,14 @@
       - podman
       - python3-libselinux
       - readline-devel
-      - ripgrep
-      - the_silver_searcher
       - tmux
       - util-linux-user
       - vim
       - zlib-devel # for pyenv
       - zsh
       - gh
+      - python-unversioned-command
+      - gettext
 
 - name: Install pip
   ansible.builtin.dnf:

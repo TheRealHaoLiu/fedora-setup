@@ -31,7 +31,7 @@
 - name: Add krew to path
   ansible.builtin.lineinfile:
     path: /home/{{ ansible_user }}/.zshrc
-    line: 'export PATH="${PATH}:${HOME}/.krew/bin'
+    line: 'export PATH="${PATH}:${HOME}/.krew/bin"'
     insertafter: EOF
     state: present
     create: true
